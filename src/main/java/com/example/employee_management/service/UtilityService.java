@@ -6,14 +6,14 @@ import org.springframework.stereotype.Service;
 public class UtilityService {
 
     /**
-     * Generates a unique employee code by concatenating the prefix "EMP" with the
-     * current system time in milliseconds.
-     * This ensures that each generated code is unique based on the timestamp.
+     * Generates a unique employee code based on the provided number.
+     * The generated code is calculated by adding 1000 to the input number.
      *
-     * @return a unique employee code string in the format "EMP_{timestamp}"
+     * @param number the input number to generate the employee code from
+     * @return a unique employee code as a Long value
      */
-    public String autoGenerateEmployeeCode() {
+    public Long autoGenerateEmployeeCode(int number) {
         // Logic to generate a unique employee code
-        return "EMP_" + System.currentTimeMillis();
+        return (Long.valueOf(1000 + number));
     }
 }
