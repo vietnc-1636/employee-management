@@ -6,6 +6,8 @@ public class EmployeeDTO {
     private String name;
     private String email;
     private Long departmentId;
+    private String departmentName;
+    private Long employeeCode;
 
     public Long getId() {
         return id;
@@ -37,6 +39,22 @@ public class EmployeeDTO {
 
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
+    public Long getEmployeeCode() {
+        return employeeCode;
+    }
+
+    public void setEmployeeCode(Long employeeCode) {
+        this.employeeCode = employeeCode;
     }
 
 }

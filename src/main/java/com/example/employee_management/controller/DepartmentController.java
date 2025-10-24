@@ -2,7 +2,6 @@ package com.example.employee_management.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,41 +10,42 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.employee_management.dto.EmployeeDTO;
-import com.example.employee_management.service.EmployeeService;
+import com.example.employee_management.dto.DepartmentDTO;
+import com.example.employee_management.service.DepartmentService;
 
 @RestController
-@RequestMapping("/api/employees")
-public class EmployeeController {
+@RequestMapping("/api/departments")
+public class DepartmentController {
 
-    @Autowired
-    private EmployeeService employeeService;
+    private DepartmentService departmentService;
+
+    public DepartmentController(DepartmentService departmentService) {
+        this.departmentService = departmentService;
+    }
 
     @GetMapping()
-    public ResponseEntity<List<EmployeeDTO>> index(@RequestParam(required = false) String keyword) {
-        List<EmployeeDTO> employees = employeeService.getEmployees(keyword);
-
-        return ResponseEntity.ok(employees);
+    public ResponseEntity<List<DepartmentDTO>> index() {
+        List<DepartmentDTO> departments = departmentService.getAllDepartments();
+        return ResponseEntity.ok(departments);
     }
 
     @PostMapping()
-    public ResponseEntity<EmployeeDTO> create(@RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity<DepartmentDTO> create(@RequestBody DepartmentDTO departmentDTO) {
         try {
-            EmployeeDTO employee = employeeService.create(employeeDTO);
-            return ResponseEntity.ok(employee);
+            DepartmentDTO department = departmentService.create(departmentDTO);
+            return ResponseEntity.ok(department);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeDTO> update(@PathVariable Long id, @RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity<DepartmentDTO> update(@PathVariable Long id, @RequestBody DepartmentDTO departmentDTO) {
         try {
-            EmployeeDTO employee = employeeService.update(id, employeeDTO);
-            return ResponseEntity.ok(employee);
+            DepartmentDTO department = departmentService.update(id, departmentDTO);
+            return ResponseEntity.ok(department);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -54,10 +54,11 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         try {
-            employeeService.delete(id);
+            departmentService.delete(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
+
 }
