@@ -1,40 +1,83 @@
 package com.example.employee_management.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.employee_management.dto.EmployeeDTO;
+import com.example.employee_management.model.Department;
+import com.example.employee_management.model.Employee;
+import com.example.employee_management.repository.DepartmentRepository;
+import com.example.employee_management.repository.EmployeeRepository;
 
 @Service
 public class EmployeeService {
 
-    @Autowired
     private UtilityService utilityService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private EmployeeRepository employeeRepository;
+    private DepartmentRepository departmentRepository;
 
-    public List<EmployeeDTO> getAllEmployees() {
-        List<EmployeeDTO> employees = new ArrayList<>();
-
-        for (int i = 0; i < 5; i++) {
-            EmployeeDTO employee = new EmployeeDTO();
-            employee.setId(utilityService.autoGenerateEmployeeCode(i));
-            employee.setName("Employee " + i);
-            employee.setEmail("employee" + i + "@example.com");
-            employee.setDepartmentId((long) (i % 2));
-            employees.add(employee);
-        }
-
-        return employees;
+    public EmployeeService(UtilityService utilityService, EmployeeRepository employeeRepository,
+            DepartmentRepository departmentRepository) {
+        this.utilityService = utilityService;
+        this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
     }
 
-    public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
-        // Code to save the employee to the database (omitted for brevity)
+    public List<EmployeeDTO> getEmployees(String keyword) {
+        List<Employee> employees;
 
-        return employeeDTO;
+        if (keyword != null && !keyword.isEmpty()) {
+            employees = employeeRepository.findByKeyword(keyword);
+
+            return employees.stream()
+                    .map(utilityService::convertToDTO)
+                    .collect(Collectors.toList());
+        }
+
+        employees = employeeRepository.findAll();
+
+        return employees.stream()
+                .map(utilityService::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public EmployeeDTO create(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        employee.setName(employeeDTO.getName());
+        employee.setEmail(employeeDTO.getEmail());
+
+        Department department = departmentRepository.findById(employeeDTO.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException(
+                        "Department not found with id " + employeeDTO.getDepartmentId()));
+        employee.setDepartment(department);
+        employee = employeeRepository.save(employee);
+
+        return utilityService.convertToDTO(employee);
+    }
+
+    @Transactional
+    public EmployeeDTO update(Long id, EmployeeDTO employeeDTO) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id " + id));
+        employee.setName(employeeDTO.getName());
+        employee.setEmail(employeeDTO.getEmail());
+
+        Department department = departmentRepository.findById(employeeDTO.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException(
+                        "Department not found with id " + employeeDTO.getDepartmentId()));
+        employee.setDepartment(department);
+        employee = employeeRepository.save(employee);
+
+        return utilityService.convertToDTO(employee);
+    }
+
+    public void delete(Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id " + id));
+        employeeRepository.delete(employee);
     }
 }

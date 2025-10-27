@@ -2,6 +2,9 @@ package com.example.employee_management.service;
 
 import org.springframework.stereotype.Service;
 
+import com.example.employee_management.dto.EmployeeDTO;
+import com.example.employee_management.model.Employee;
+
 @Service
 public class UtilityService {
 
@@ -16,4 +19,22 @@ public class UtilityService {
         // Logic to generate a unique employee code
         return (Long.valueOf(1000 + number));
     }
+
+    /**
+     * Converts an Employee entity to an EmployeeDTO.
+     *
+     * @param employee the Employee entity to convert
+     * @return the corresponding EmployeeDTO
+     */
+    public EmployeeDTO convertToDTO(Employee employee) {
+        EmployeeDTO dto = new EmployeeDTO();
+        dto.setId(employee.getId());
+        dto.setName(employee.getName());
+        dto.setEmail(employee.getEmail());
+        dto.setEmployeeCode(autoGenerateEmployeeCode(employee.getId().intValue()));
+        dto.setDepartmentName(employee.getDepartment().getName());
+
+        return dto;
+    }
+
 }
