@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.employee_management.dto.EmployeeDTO;
+import com.example.employee_management.exception.ModelNotFoundException;
 import com.example.employee_management.model.Department;
 import com.example.employee_management.model.Employee;
 import com.example.employee_management.repository.DepartmentRepository;
@@ -18,6 +19,8 @@ public class EmployeeService {
     private UtilityService utilityService;
     private EmployeeRepository employeeRepository;
     private DepartmentRepository departmentRepository;
+
+    private final int NOT_FOUND_CODE = 404;
 
     public EmployeeService(UtilityService utilityService, EmployeeRepository employeeRepository,
             DepartmentRepository departmentRepository) {
@@ -33,14 +36,14 @@ public class EmployeeService {
             employees = employeeRepository.findByKeyword(keyword);
 
             return employees.stream()
-                    .map(utilityService::convertToDTO)
+                    .map(utilityService::convertToEmployeeDTO)
                     .collect(Collectors.toList());
         }
 
         employees = employeeRepository.findAll();
 
         return employees.stream()
-                .map(utilityService::convertToDTO)
+                .map(utilityService::convertToEmployeeDTO)
                 .collect(Collectors.toList());
     }
 
@@ -50,34 +53,34 @@ public class EmployeeService {
         employee.setName(employeeDTO.getName());
         employee.setEmail(employeeDTO.getEmail());
 
-        Department department = departmentRepository.findById(employeeDTO.getDepartmentId())
-                .orElseThrow(() -> new RuntimeException(
-                        "Department not found with id " + employeeDTO.getDepartmentId()));
+        Department department = departmentRepository.findById(employeeDTO.getDepartment().getId())
+                .orElseThrow(() -> new ModelNotFoundException(
+                        "Department not found with id " + employeeDTO.getDepartment().getId(), NOT_FOUND_CODE));
         employee.setDepartment(department);
         employee = employeeRepository.save(employee);
 
-        return utilityService.convertToDTO(employee);
+        return utilityService.convertToEmployeeDTO(employee);
     }
 
     @Transactional
     public EmployeeDTO update(Long id, EmployeeDTO employeeDTO) {
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found with id " + id));
+                .orElseThrow(() -> new ModelNotFoundException("Employee not found with id " + id, NOT_FOUND_CODE));
         employee.setName(employeeDTO.getName());
         employee.setEmail(employeeDTO.getEmail());
 
-        Department department = departmentRepository.findById(employeeDTO.getDepartmentId())
-                .orElseThrow(() -> new RuntimeException(
-                        "Department not found with id " + employeeDTO.getDepartmentId()));
+        Department department = departmentRepository.findById(employeeDTO.getDepartment().getId())
+                .orElseThrow(() -> new ModelNotFoundException(
+                        "Department not found with id " + employeeDTO.getDepartment().getId(), NOT_FOUND_CODE));
         employee.setDepartment(department);
         employee = employeeRepository.save(employee);
 
-        return utilityService.convertToDTO(employee);
+        return utilityService.convertToEmployeeDTO(employee);
     }
 
     public void delete(Long id) {
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found with id " + id));
+                .orElseThrow(() -> new ModelNotFoundException("Employee not found with id " + id, NOT_FOUND_CODE));
         employeeRepository.delete(employee);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.employee_management.config;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,5 +21,18 @@ public class AppConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Bean to map between objects (DTO <-> Entity).
+     * ModelMapper helps convert data between layers easily.
+     *
+     * @return ModelMapper instance
+     */
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+
+        return modelMapper;
     }
 }

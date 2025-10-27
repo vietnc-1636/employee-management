@@ -2,7 +2,6 @@ package com.example.employee_management.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.employee_management.dto.EmployeeDTO;
 import com.example.employee_management.service.EmployeeService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/employees")
 public class EmployeeController {
 
-    @Autowired
     private EmployeeService employeeService;
+
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     @GetMapping()
     public ResponseEntity<List<EmployeeDTO>> index(@RequestParam(required = false) String keyword) {
@@ -32,22 +36,22 @@ public class EmployeeController {
     }
 
     @PostMapping()
-    public ResponseEntity<EmployeeDTO> create(@RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity<EmployeeDTO> create(@Valid @RequestBody EmployeeDTO employeeDTO) {
         try {
             EmployeeDTO employee = employeeService.create(employeeDTO);
             return ResponseEntity.ok(employee);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeDTO> update(@PathVariable Long id, @RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity<EmployeeDTO> update(@PathVariable Long id, @Valid @RequestBody EmployeeDTO employeeDTO) {
         try {
             EmployeeDTO employee = employeeService.update(id, employeeDTO);
             return ResponseEntity.ok(employee);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -57,7 +61,7 @@ public class EmployeeController {
             employeeService.delete(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 }
