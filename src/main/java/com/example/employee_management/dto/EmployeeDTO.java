@@ -1,60 +1,40 @@
 package com.example.employee_management.dto;
 
+import org.hibernate.validator.constraints.UniqueElements;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class EmployeeDTO {
 
     private Long id;
+
+    @NotNull(message = "Employee name cannot be null")
+    @NotBlank(message = "Employee name cannot be blank")
+    @Size(max = 50, message = "Employee name must not exceed 50 characters")
     private String name;
+
+    @NotNull(message = "Employee email cannot be null")
+    @NotBlank(message = "Employee email cannot be blank")
+    @Email(message = "Employee email should be valid")
+    @Size(max = 100, message = "Employee email must not exceed 100 characters")
+    @UniqueElements(message = "Employee email must be unique")
     private String email;
-    private Long departmentId;
-    private String departmentName;
+
     private Long employeeCode;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Long getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Long departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public String getDepartmentName() {
-        return departmentName;
-    }
-
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
-    }
-
-    public Long getEmployeeCode() {
-        return employeeCode;
-    }
-
-    public void setEmployeeCode(Long employeeCode) {
-        this.employeeCode = employeeCode;
-    }
-
+    @NotNull(message = "Department cannot be null")
+    @Valid
+    private DepartmentDTO department;
 }

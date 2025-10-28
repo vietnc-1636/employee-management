@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.employee_management.dto.DepartmentDTO;
 import com.example.employee_management.service.DepartmentService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/departments")
 public class DepartmentController {
@@ -32,22 +34,23 @@ public class DepartmentController {
     }
 
     @PostMapping()
-    public ResponseEntity<DepartmentDTO> create(@RequestBody DepartmentDTO departmentDTO) {
+    public ResponseEntity<DepartmentDTO> create(@Valid @RequestBody DepartmentDTO departmentDTO) {
         try {
             DepartmentDTO department = departmentService.create(departmentDTO);
             return ResponseEntity.ok(department);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DepartmentDTO> update(@PathVariable Long id, @RequestBody DepartmentDTO departmentDTO) {
+    public ResponseEntity<DepartmentDTO> update(@PathVariable Long id,
+            @Valid @RequestBody DepartmentDTO departmentDTO) {
         try {
             DepartmentDTO department = departmentService.update(id, departmentDTO);
             return ResponseEntity.ok(department);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -57,7 +60,7 @@ public class DepartmentController {
             departmentService.delete(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 

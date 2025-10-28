@@ -1,12 +1,21 @@
 package com.example.employee_management.service;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.example.employee_management.dto.DepartmentDTO;
 import com.example.employee_management.dto.EmployeeDTO;
+import com.example.employee_management.model.Department;
 import com.example.employee_management.model.Employee;
 
 @Service
 public class UtilityService {
+
+    private final ModelMapper modelMapper;
+
+    public UtilityService(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     /**
      * Generates a unique employee code based on the provided number.
@@ -23,18 +32,24 @@ public class UtilityService {
     /**
      * Converts an Employee entity to an EmployeeDTO.
      *
-     * @param employee the Employee entity to convert
-     * @return the corresponding EmployeeDTO
+     * @param employee the Employee entity to be converted
+     * @return EmployeeDTO object mapped from the given Employee entity
      */
-    public EmployeeDTO convertToDTO(Employee employee) {
-        EmployeeDTO dto = new EmployeeDTO();
-        dto.setId(employee.getId());
-        dto.setName(employee.getName());
-        dto.setEmail(employee.getEmail());
-        dto.setEmployeeCode(autoGenerateEmployeeCode(employee.getId().intValue()));
-        dto.setDepartmentName(employee.getDepartment().getName());
+    public EmployeeDTO convertToEmployeeDTO(Employee employee) {
+        EmployeeDTO dto = modelMapper.map(employee, EmployeeDTO.class);
 
         return dto;
     }
 
+    /**
+     * Converts a Department entity to a DepartmentDTO.
+     *
+     * @param department the Department entity to be converted
+     * @return DepartmentDTO object mapped from the given Department entity
+     */
+    public DepartmentDTO convertToDepartmentDTO(Department department) {
+        DepartmentDTO dto = modelMapper.map(department, DepartmentDTO.class);
+
+        return dto;
+    }
 }
