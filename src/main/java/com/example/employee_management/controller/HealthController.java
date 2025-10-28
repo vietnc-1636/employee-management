@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HealthController {
 
-    @GetMapping("/")
+    @GetMapping("/hello")
     public String hello() {
         return "Hello, Spring Boot! Your application is running successfully.";
     }
