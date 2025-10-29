@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/index :: layout(~{::title}, ~{::css}, ~{::content}, ~{::js})}">
+  <title>Departments - JAVAC Corporation</title>
+
+  <th:block th:fragment="css">
+    <!-- Custom CSS can be added here -->
+    <style>
+      /* Example custom styles */
+      .table th, .table td {
+        vertical-align: middle;
+      }
+      .text-align-center {
+        text-align: center;
+      }
+    </style>
+  </th:block>
+
+  <!-- ===== DYNAMIC CONTENT INJECTION ===== -->
+  <th:block th:fragment="content">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a th:href="@{/departments}">Departments</a></li>
+              <li class="breadcrumb-item active">Department List</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row mb-2">
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">List Departments</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th style="width: 5%">#</th>
+                      <th>Name</th>
+                      <th style="width: 15%">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="department, iterStat : ${departments}">
+                      <td class="text-align-center" th:text="${iterStat.index + 1}"></td>
+                      <td th:text="${department.name}"></td>
+                      <td>
+                        <form th:action="@{/departments/{id}(id=${department.id})}" method="POST" style="display: inline;">
+                          <input type="hidden" name="_method" value="DELETE"/>
+                          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Add New Department</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <form th:action="@{/departments}" th:object="${department}" method="POST">
+                  <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+
+                  <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+                
+                  <div class="form-group">
+                    <label for="name">Department Name</label>
+                    <input type="text" class="form-control" id="name" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                  </div>
+                  <button type="submit" class="btn btn-info float-sm-right">Add</button>
+                </form>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <br/>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+  </th:block>
+
+  <th:block th:fragment="js">
+    <!-- Custom JS can be added here -->
+    <script>
+      // Auto hidden class alert after 3 seconds
+      setTimeout(function() {
+        var alerts = document.getElementsByClassName('alert');
+        for (var i = 0; i < alerts.length; i++) {
+          alerts[i].style.display = 'none';
+        }
+      }, 3000);
+
+
+      // Auto hiden class invalid-feedback after 5 seconds
+      setTimeout(function() {
+        var feedbacks = document.getElementsByClassName('invalid-feedback');
+        for (var i = 0; i < feedbacks.length; i++) {
+          feedbacks[i].style.display = 'none';
+        }
+      }, 3000);
+
+      // Auto remove class is-invalid after 5 seconds
+      setTimeout(function() {
+        var inputs = document.getElementsByClassName('is-invalid');
+        for (var i = 0; i < inputs.length; i++) {
+          inputs[i].classList.remove('is-invalid');
+        }
+      }, 3000);
+    </script>
+  </th:block>
+</html>

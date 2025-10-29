@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/index :: layout(~{::title}, ~{::css}, ~{::content}, ~{::js})}">
+  <title>Edit Employee - JAVAC Corporation</title>
+
+  <th:block th:fragment="css">
+    <!-- Custom CSS can be added here -->
+    <!-- Select2 -->
+    <link rel="stylesheet" th:href="@{/plugins/select2/css/select2.min.css}">
+    <link rel="stylesheet" th:href="@{/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css}">
+  </th:block>
+
+  <!-- ===== DYNAMIC CONTENT INJECTION ===== -->
+  <th:block th:fragment="content">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Employees</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a th:href="@{/employees}">Employees</a></li>
+              <li class="breadcrumb-item active">Edit Employee</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+            <div class="card card-info">
+              <div class="card-header">
+                <h3 class="card-title">Edit Employee Form</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form class="form-horizontal" th:action="@{/employees/{id}(id=${employee.id})}" th:object="${employee}" method="POST">
+                <input type="hidden" name="_method" value="PUT" />
+                <div class="card-body">
+                  <div class="form-group row">
+                    <label for="inputName" class="col-sm-2 col-form-label">Name</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="inputName" placeholder="Enter employee name" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                      <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="inputEmail" placeholder="Enter employee email" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                      <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Department</label>
+                    <div class="col-sm-4">
+                  <select class="form-control select2bs4" style="width: 100%;" th:field="*{department.id}" th:classappend="${#fields.hasErrors('department')} ? 'is-invalid'">
+                          <option value="">-- Select Department --</option>
+                          <option th:each="dept : ${departments}" 
+                            th:value="${dept.id}" 
+                            th:text="${dept.name}"
+                            th:selected="${employee.department != null && employee.department.id == dept.id}">
+                          </option>
+                      </select>
+                      <div class="invalid-feedback" th:if="${#fields.hasErrors('department')}" th:errors="*{department}"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-info float-right">Update</button>
+                </div>
+                <!-- /.card-footer -->
+              </form>
+            </div>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+  </th:block>
+
+  <th:block th:fragment="js">
+    <!-- Select2 -->
+    <script th:src="@{/plugins/select2/js/select2.full.min.js}"></script>
+    <script>
+      $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2()
+
+        //Initialize Select2 Elements
+        $('.select2bs4').select2({
+          theme: 'bootstrap4'
+        })
+      })
+    </script>
+    <script>
+      // Auto hiden class invalid-feedback after 5 seconds
+      setTimeout(function() {
+        var feedbacks = document.getElementsByClassName('invalid-feedback');
+        for (var i = 0; i < feedbacks.length; i++) {
+          feedbacks[i].style.display = 'none';
+        }
+      }, 3000);
+
+      // Auto remove class is-invalid after 5 seconds
+      setTimeout(function() {
+        var inputs = document.getElementsByClassName('is-invalid');
+        for (var i = 0; i < inputs.length; i++) {
+          inputs[i].classList.remove('is-invalid');
+        }
+      }, 3000);
+    </script>
+  </th:block>
+</html>
