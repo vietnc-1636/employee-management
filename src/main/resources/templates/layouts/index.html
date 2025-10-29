@@ -1,18 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, css, content, js)">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>JAVAC Corporation</title>
+
+  <th:block th:if="${title}">
+    <th:block th:utext="${title}"></th:block>
+  </th:block>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome Icons -->
-  <link rel="stylesheet" th:href="@{plugins/fontawesome-free/css/all.min.css}">
+  <link rel="stylesheet" th:href="@{/plugins/fontawesome-free/css/all.min.css}">
   <!-- IonIcons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" th:href="@{dist/css/adminlte.min.css}">
+  <link rel="stylesheet" th:href="@{/dist/css/adminlte.min.css}">
+
+   <!-- ===== DYNAMIC CSS INJECTION ===== -->
+  <th:block th:if="${css}">
+    <th:block th:replace="${css}"></th:block>
+  </th:block>
 </head>
 <!--
 `body` tag options:
@@ -54,7 +62,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="/" class="brand-link">
+    <a th:href="@{/}" class="brand-link">
       <span class="brand-text font-weight-light">JAVAC Corporation</span>
     </a>
 
@@ -63,10 +71,10 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img th:src="@{dist/img/iron-man.png}" class="img-circle elevation-2" alt="User Image">
+          <img th:src="@{/dist/img/iron-man.png}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Iron Man</a>
+          <a th:href="@{/profile}" class="d-block">Iron Man</a>
         </div>
       </div>
 
@@ -79,13 +87,13 @@
                with font-awesome or any other icon font library -->
         
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a th:href="@{/employees}" class="nav-link">
               <i class="fas fa-users nav-icon"></i>
               <p>Employees</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a th:href="@{/departments}" class="nav-link">
               <i class="fas fa-building nav-icon"></i>
               <p>Departments</p>
             </a>
@@ -99,37 +107,7 @@
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Dashboard</h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
-
-    <!-- Main content -->
-    <div class="content">
-      <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                Coming Soon...
-            </div>
-        </div>
-        <!-- /.row -->
-      </div>
-      <!-- /.container-fluid -->
-    </div>
-    <!-- /.content -->
+    <th:block th:replace="${content}"></th:block>
   </div>
   <!-- /.content-wrapper -->
 
@@ -150,16 +128,21 @@
 <!-- REQUIRED SCRIPTS -->
 
 <!-- jQuery -->
-<script th:src="@{plugins/jquery/jquery.min.js}"></script>
+<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
 <!-- Bootstrap -->
-<script th:src="@{plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
 <!-- AdminLTE -->
-<script th:src="@{dist/js/adminlte.js}"></script>
+<script th:src="@{/dist/js/adminlte.js}"></script>
 
 <!-- OPTIONAL SCRIPTS -->
-<script th:src="@{plugins/chart.js/Chart.min.js}"></script>
+<!-- <script th:src="@{plugins/chart.js/Chart.min.js}"></script> -->
 
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script th:src="@{dist/js/pages/dashboard.js}"></script>
+<!-- <script th:src="@{dist/js/pages/dashboard.js}"></script> -->
+
+<!-- ===== DYNAMIC JS INJECTION ===== -->
+<th:block th:if="${js}">
+  <th:block th:replace="${js}"></th:block>
+</th:block>
 </body>
 </html>
