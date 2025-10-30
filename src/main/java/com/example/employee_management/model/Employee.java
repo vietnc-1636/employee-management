@@ -38,6 +38,9 @@ public class Employee {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @Column(name = "employee_code", nullable = false, unique = true)
+    private Long employeeCode;
+
     // Relationship with Department
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id", referencedColumnName = "id")

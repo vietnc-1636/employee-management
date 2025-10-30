@@ -1,6 +1,7 @@
 package com.example.employee_management.service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class EmployeeService {
     private UtilityService utilityService;
     private EmployeeRepository employeeRepository;
     private DepartmentRepository departmentRepository;
+    private Random random = new Random();
 
     private final int NOT_FOUND_CODE = 404;
 
@@ -47,11 +49,18 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
+    public EmployeeDTO getEmployeeById(Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ModelNotFoundException("Employee not found with id " + id, NOT_FOUND_CODE));
+        return utilityService.convertToEmployeeDTO(employee);
+    }
+
     @Transactional
     public EmployeeDTO create(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         employee.setName(employeeDTO.getName());
         employee.setEmail(employeeDTO.getEmail());
+        employee.setEmployeeCode(utilityService.autoGenerateEmployeeCode(random.nextInt(9000)));
 
         Department department = departmentRepository.findById(employeeDTO.getDepartment().getId())
                 .orElseThrow(() -> new ModelNotFoundException(

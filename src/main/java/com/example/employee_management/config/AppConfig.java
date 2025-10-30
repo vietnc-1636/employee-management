@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 @Configuration
 public class AppConfig {
@@ -34,5 +35,14 @@ public class AppConfig {
         ModelMapper modelMapper = new ModelMapper();
 
         return modelMapper;
+    }
+
+    /**
+     * Enable support for HTTP method override via _method parameter.
+     * Allows PUT, DELETE methods in HTML forms.
+     */
+    @Bean
+    public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+        return new HiddenHttpMethodFilter();
     }
 }
