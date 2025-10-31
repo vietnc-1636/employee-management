@@ -140,6 +140,9 @@
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <!-- <script th:src="@{dist/js/pages/dashboard.js}"></script> -->
 
+<!-- Custom JS can be added here -->
+<script th:src="@{/dist/js/custom.js}"></script>
+
 <!-- ===== DYNAMIC JS INJECTION ===== -->
 <th:block th:if="${js}">
   <th:block th:replace="${js}"></th:block>

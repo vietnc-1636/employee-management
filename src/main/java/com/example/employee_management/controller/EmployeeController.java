@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.employee_management.dto.DepartmentDTO;
 import com.example.employee_management.dto.EmployeeDTO;
 import com.example.employee_management.service.DepartmentService;
 import com.example.employee_management.service.EmployeeService;
@@ -45,7 +46,7 @@ public class EmployeeController {
     @GetMapping("/create")
     public String createForm(Model model) {
         model.addAttribute("employee", new EmployeeDTO());
-        model.addAttribute("departments", departmentService.getAllDepartments());
+        model.addAttribute("departments", this.getDepartments());
         return "employee/create";
     }
 
@@ -58,7 +59,7 @@ public class EmployeeController {
         log.info("Creating employee: {}", employeeDTO);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("departments", departmentService.getAllDepartments());
+            model.addAttribute("departments", this.getDepartments());
             return "employee/create";
         }
 
@@ -70,7 +71,7 @@ public class EmployeeController {
             log.error("Failed to create employee", e);
             redirectAttributes.addFlashAttribute("error",
                     "Failed to create employee: " + e.getMessage());
-            model.addAttribute("departments", departmentService.getAllDepartments());
+            model.addAttribute("departments", this.getDepartments());
             return "employee/create";
         }
     }
@@ -80,7 +81,7 @@ public class EmployeeController {
         try {
             EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
             model.addAttribute("employee", employeeDTO);
-            model.addAttribute("departments", departmentService.getAllDepartments());
+            model.addAttribute("departments", this.getDepartments());
             return "employee/edit";
         } catch (Exception e) {
             log.error("Failed to load employee for edit", e);
@@ -97,7 +98,7 @@ public class EmployeeController {
         log.info("Updating employee: {}", employeeDTO);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("departments", departmentService.getAllDepartments());
+            model.addAttribute("departments", this.getDepartments());
             return "employee/edit";
         }
 
@@ -107,7 +108,7 @@ public class EmployeeController {
             return "redirect:/employees";
         } catch (Exception e) {
             log.error("Failed to update employee", e);
-            model.addAttribute("departments", departmentService.getAllDepartments());
+            model.addAttribute("departments", this.getDepartments());
             return "employee/edit";
         }
     }
@@ -125,5 +126,9 @@ public class EmployeeController {
         }
 
         return "redirect:/employees";
+    }
+
+    private List<DepartmentDTO> getDepartments() {
+        return departmentService.getAllDepartments();
     }
 }

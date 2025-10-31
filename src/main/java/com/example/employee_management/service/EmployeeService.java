@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,10 @@ import com.example.employee_management.model.Employee;
 import com.example.employee_management.repository.DepartmentRepository;
 import com.example.employee_management.repository.EmployeeRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class EmployeeService {
 
     private UtilityService utilityService;
@@ -91,5 +95,16 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new ModelNotFoundException("Employee not found with id " + id, NOT_FOUND_CODE));
         employeeRepository.delete(employee);
+    }
+
+    /**
+     * Get total employee count with caching (1 minute)
+     * 
+     * @return total number of employees
+     */
+    @Cacheable(value = "employeeStats", key = "'totalEmployees'")
+    public long getTotalEmployeeCount() {
+        log.info("Fetching total employee count from database");
+        return employeeRepository.count();
     }
 }
