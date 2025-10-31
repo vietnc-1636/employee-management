@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/index :: layout(~{::title}, ~{::css}, ~{::content}, ~{::js})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layouts/index :: layout(~{::title}, ~{::css}, ~{::content}, ~{::js})}">
   <title>Departments - JAVAC Corporation</title>
 
   <th:block th:fragment="css">
@@ -52,10 +54,15 @@
                       <td class="text-align-center" th:text="${iterStat.index + 1}"></td>
                       <td th:text="${department.name}"></td>
                       <td>
-                        <form th:action="@{/departments/{id}(id=${department.id})}" method="POST" style="display: inline;">
-                          <input type="hidden" name="_method" value="DELETE"/>
-                          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
+                        <div sec:authorize="hasRole('ADMIN')">
+                          <form th:action="@{/departments/{id}(id=${department.id})}" method="POST" style="display: inline;">
+                            <input type="hidden" name="_method" value="DELETE"/>
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this department?')">Delete</button>
+                          </form>
+                        </div>
+                        <div sec:authorize="hasRole('USER')">
+                          <span class="text-muted">No actions available</span>
+                        </div>
                       </td>
                     </tr>
                   </tbody>
@@ -64,7 +71,7 @@
               <!-- /.card-body -->
             </div>
           </div>
-          <div class="col-lg-4">
+          <div class="col-lg-4" sec:authorize="hasRole('ADMIN')">
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Add New Department</h3>

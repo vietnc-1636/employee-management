@@ -2,6 +2,7 @@ package com.example.employee_management.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,6 +45,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public String createForm(Model model) {
         model.addAttribute("employee", new EmployeeDTO());
         model.addAttribute("departments", this.getDepartments());
@@ -51,6 +53,7 @@ public class EmployeeController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public String create(@Valid @ModelAttribute("employee") EmployeeDTO employeeDTO,
             BindingResult bindingResult,
             Model model,
@@ -77,6 +80,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editForm(@PathVariable Long id, Model model) {
         try {
             EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
@@ -90,6 +94,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Long id,
             @Valid @ModelAttribute("employee") EmployeeDTO employeeDTO,
             BindingResult bindingResult,
@@ -114,6 +119,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Long id) {
 
         log.info("Deleting employee: {}", id);
