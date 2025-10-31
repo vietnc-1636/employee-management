@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/index :: layout(~{::title}, ~{::css}, ~{::content}, ~{::js})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layouts/index :: layout(~{::title}, ~{::css}, ~{::content}, ~{::js})}">
   <title>Employees - JAVAC Corporation</title>
 
   <th:block th:fragment="css">
@@ -53,7 +55,7 @@
             </div>
           </div>
           <div class="col-lg-6 offset-lg-2">
-            <div class="breadcrumb float-sm-right">
+            <div class="breadcrumb float-sm-right" sec:authorize="hasRole('ADMIN')">
               <a th:href="@{/employees/create}" class="btn btn-info btn-sm">Add New Employee</a>
             </div>
           </div>
@@ -77,11 +79,16 @@
                   <td th:text="${employee.email}"></td>
                   <td th:text="${employee.department.name}"></td>
                   <td>
-                    <a th:href="@{/employees/{id}/edit(id=${employee.id})}" class="btn btn-warning btn-sm">Edit</a>
-                    <form th:action="@{/employees/{id}(id=${employee.id})}" method="POST" style="display: inline;">
-                      <input type="hidden" name="_method" value="DELETE" />
-                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
+                    <div sec:authorize="hasRole('ADMIN')">
+                      <a th:href="@{/employees/{id}/edit(id=${employee.id})}" class="btn btn-warning btn-sm">Edit</a>
+                      <form th:action="@{/employees/{id}(id=${employee.id})}" method="POST" style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE" />
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</button>
+                      </form>
+                    </div>
+                    <div sec:authorize="hasRole('USER')">
+                      <span class="text-muted">No actions available</span>
+                    </div>
                   </td>
                 </tr>
               </thead>

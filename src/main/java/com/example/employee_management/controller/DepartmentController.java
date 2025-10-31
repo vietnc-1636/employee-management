@@ -2,6 +2,7 @@ package com.example.employee_management.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -37,6 +38,7 @@ public class DepartmentController {
         return "department/index";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public String create(
             @Valid @ModelAttribute("department") DepartmentDTO departmentDTO,
@@ -72,6 +74,7 @@ public class DepartmentController {
         return "redirect:/departments";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}")
     public String delete(@PathVariable Long id) {
 

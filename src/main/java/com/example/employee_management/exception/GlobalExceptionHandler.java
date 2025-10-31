@@ -1,98 +1,77 @@
 package com.example.employee_management.exception;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
-import com.example.employee_management.dto.ErrorResponse;
-
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
-@RestControllerAdvice
+@ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-    /**
-     * Handle validation errors from @Valid
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationErrors(
-            MethodArgumentNotValidException ex,
-            HttpServletRequest request) {
-
-        log.warn("Validation failed for path: {}", request.getRequestURI());
-
-        List<ErrorResponse.FieldErrorDetail> fieldErrors = new ArrayList<>();
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            fieldErrors.add(ErrorResponse.FieldErrorDetail.builder()
-                    .field(error.getField())
-                    .message(error.getDefaultMessage())
-                    .rejectedValue(error.getRejectedValue())
-                    .build());
+        /**
+         * Handle Access Denied (403) - Spring Security authorization failures
+         */
+        @ExceptionHandler(AccessDeniedException.class)
+        public String handleAccessDenied(AccessDeniedException ex, Model model) {
+                log.warn("Access denied: {}", ex.getMessage());
+                model.addAttribute("error", "Access Denied");
+                model.addAttribute("message", "You don't have permission to access this resource.");
+                model.addAttribute("status", HttpStatus.FORBIDDEN.value());
+                return "error/403";
         }
 
-        ErrorResponse response = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message("Validation failed")
-                .code(HttpStatus.BAD_REQUEST.value())
-                .path(request.getRequestURI())
-                .fieldErrors(fieldErrors)
-                .build();
+        /**
+         * Handle Spring Security Authorization Denied Exception
+         */
+        @ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
+        public String handleAuthorizationDenied(
+                        org.springframework.security.authorization.AuthorizationDeniedException ex,
+                        Model model) {
+                log.warn("Authorization denied: {}", ex.getMessage());
+                model.addAttribute("error", "Access Denied");
+                model.addAttribute("message", "You don't have permission to perform this action.");
+                model.addAttribute("status", HttpStatus.FORBIDDEN.value());
+                return "error/403";
+        }
 
-        return ResponseEntity.badRequest().body(response);
-    }
+        /**
+         * Handle Model Not Found (404)
+         */
+        @ExceptionHandler(ModelNotFoundException.class)
+        public String handleModelNotFound(ModelNotFoundException ex, Model model) {
+                log.error("Model not found: {}", ex.getMessage());
+                model.addAttribute("error", "Not Found");
+                model.addAttribute("message", ex.getMessage());
+                model.addAttribute("status", HttpStatus.NOT_FOUND.value());
+                return "error/404";
+        }
 
-    /**
-     * Handle model not found
-     */
-    @ExceptionHandler(ModelNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleModelNotFound(
-            ModelNotFoundException ex,
-            HttpServletRequest request) {
+        /**
+         * Handle No Handler Found (404)
+         */
+        @ExceptionHandler(NoHandlerFoundException.class)
+        public String handleNoHandlerFound(NoHandlerFoundException ex, Model model) {
+                log.warn("No handler found: {}", ex.getRequestURL());
+                model.addAttribute("error", "Page Not Found");
+                model.addAttribute("message", "The page you are looking for does not exist.");
+                model.addAttribute("status", HttpStatus.NOT_FOUND.value());
+                return "error/404";
+        }
 
-        log.error("Model not found: {}", ex.getMessage());
-
-        ErrorResponse response = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.NOT_FOUND.value())
-                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
-                .message(ex.getMessage())
-                .code(ex.getCode())
-                .path(request.getRequestURI())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
-
-    /**
-     * Handle all uncaught exceptions
-     */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(
-            Exception ex,
-            HttpServletRequest request) {
-
-        log.error("Unexpected error occurred", ex);
-
-        ErrorResponse response = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("An unexpected error occurred")
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .path(request.getRequestURI())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    }
+        /**
+         * Handle all uncaught exceptions (500)
+         */
+        @ExceptionHandler(Exception.class)
+        public String handleGlobalException(Exception ex, Model model) {
+                log.error("Unexpected error occurred", ex);
+                model.addAttribute("error", "Internal Server Error");
+                model.addAttribute("message", "An unexpected error occurred. Please try again later.");
+                model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return "error/500";
+        }
 }
